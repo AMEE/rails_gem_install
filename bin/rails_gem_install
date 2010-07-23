@@ -8,8 +8,12 @@ if (RUBY_PLATFORM) =~ /freebsd/i && (Process.euid != 0)
   ENV['RB_USER_INSTALL'] ||= '1'
 end
 
+ENV['RAILS_ROOT'] ||= ARGV[0] if ARGV[0]
+
 require 'rubygems'
 require 'rails_gem_install'
+
+puts "[Working in: #{Rails.root}]"
 
 Rails.ensure_installation_version
 Rails.install_gems

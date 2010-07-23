@@ -1,5 +1,5 @@
 RAILS_ENV  = ENV['RAILS_ENV']
-RAILS_ROOT = Dir.pwd
+RAILS_ROOT = ENV['RAILS_ROOT'] || Dir.pwd
 
 # A dummy implementation of the Rails module to implement a few things
 # we need from Rails in order to compute and install dependencies, plus
@@ -13,7 +13,7 @@ module Rails
 
   def self.ensure_installation_version
     puts "[Ensuring correct version of Rails is installed]"
-    result = `rake -T 2>&1`
+    result = `rake -f #{Rails.root}/Rakefile -T 2>&1`
     if result =~ /Missing the Rails (\d+\.\d+\.\d+) gem/
       cmd = "gem install rails --version '#{$1}'"
       puts cmd
@@ -55,9 +55,9 @@ module Rails
 
       puts "[Ensuring config.gem gems are all installed]"
       config = self.new
-      cmds = File.readlines("config/environment.rb")
-      if RAILS_ENV && File.exist?("config/environments/#{RAILS_ENV}.rb")
-        cmds += File.readlines("config/environments/#{RAILS_ENV}.rb")
+      cmds = File.readlines("#{Rails.root}/config/environment.rb")
+      if RAILS_ENV && File.exist?("#{Rails.root}/config/environments/#{RAILS_ENV}.rb")
+        cmds += File.readlines("#{Rails.root}/config/environments/#{RAILS_ENV}.rb")
       end
       cmds = cmds.grep(/^\s*config\.gem/).join("\n")
       eval(cmds)
